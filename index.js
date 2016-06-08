@@ -48,9 +48,9 @@ app.post('/' + config.botToken, function(req, res){
 //Help
 bot.onText(/\/help/, function(msg, match){
   return bot.sendMessage(msg.chat.id,
-    '/start - Start a new battle against the, not so smart, AI. /n' +
-    '/choose - Choose your own Pokemon./n' +
-    '/attack - Attack your opponent using a specific move./n' +
+    '/start - Start a new battle against the, not so smart, AI.\n' +
+    '/choose - Choose your own Pokemon.\n' +
+    '/attack - Attack your opponent using a specific move.\n' +
     '/end - Finish your existing battle.')
 });
 //Start a new battle
