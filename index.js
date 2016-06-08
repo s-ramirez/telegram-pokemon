@@ -81,7 +81,7 @@ bot.onText(/\/choose (.+)/, function(msg, match){
   if(!pokemon || !pokemon.length){
     return bot.sendMessage(msg.chat.id, "Please type the name of your Pokemon: ex. /choose Totodile");
   }
-  battleText.userChoosePokemon(pokemon)
+  battleText.userChoosePokemon(pokemon.toLowerCase())
   .then(
     function(chosenObject){
       bot.sendMessage(msg.chat.id, chosenObject.text);

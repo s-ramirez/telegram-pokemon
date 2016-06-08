@@ -4,7 +4,7 @@ This is a [Telegram](https://telegram.org/) bot ported from [Slack-Pokemon](http
 
 Here's an example battle:
 
-<img src="http://cdn3.vox-cdn.com/assets/4681633/pkmn_slack.jpg" alt="Example Battle">
+<img src="https://dl.dropboxusercontent.com/u/61268700/telegram-bot.png" alt="Example Battle">
 
 ## Setting up
 
