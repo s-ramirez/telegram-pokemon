@@ -78,6 +78,9 @@ bot.onText(/\/end/, function(msg, match){
 //User chooses a pokemon
 bot.onText(/\/choose (.+)/, function(msg, match){
   var pokemon = match[1];
+  if(!pokemon || !pokemon.length){
+    return bot.sendMessage(msg.chat.id, "Please type the name of your Pokemon: ex. /choose Totodile");
+  }
   battleText.userChoosePokemon(pokemon)
   .then(
     function(chosenObject){
@@ -94,6 +97,9 @@ bot.onText(/\/choose (.+)/, function(msg, match){
 //Attack the opponent
 bot.onText(/\/attack (.+)/, function(msg, match){
   var move = match[1];
+  if(!move || !move.length){
+    return bot.sendMessage(msg.chat.id, "Please type the name of your Move: ex. /attack Slash");
+  }
   battleText.useMove(move.toLowerCase())
   .then(
     function(results){
