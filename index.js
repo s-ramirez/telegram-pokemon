@@ -71,7 +71,7 @@ bot.onText(/\/start/, function(msg, match) {
 });
 
 //End an existing battle
-bot.onText(/\/end/, function(msg, match){
+bot.onText(/\/end/, function(msg, match)
   battleText.endBattle()
   .then(
     function(){
