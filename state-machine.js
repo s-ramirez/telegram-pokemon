@@ -111,7 +111,14 @@ module.exports.getNpcPkmnTypes = function() {
 }
 
 module.exports.getUserAllowedMoves = function() {
-  return QRedis.smembers("user:allowedMoves");
+  return QRedis.exists("currentBattle")
+  .then(function(exists){
+    if(!exists) {
+      throw new Error("We're not in a battle, start a new one by typing /start");
+    } else {
+      return QRedis.smembers("user:allowedMoves");
+    }
+  });
 }
 module.exports.getNpcAllowedMoves = function() {
   return QRedis.smembers("npc:allowedMoves");

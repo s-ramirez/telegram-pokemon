@@ -144,7 +144,9 @@ module.exports.endBattle = function() {
 }
 
 module.exports.userMoves = function() {
-  return stateMachine.getUserAllowedMoves();
+  return stateMachine.getUserAllowedMoves().then(function(moves){
+    return moves;
+  });
 }
 
 var effectivenessMessage = function(mult) {

@@ -107,40 +107,45 @@ bot.onText(/\/choose (.+)/, function(msg, match){
 bot.onText(/\/attack/, function(msg, match){
   battleText.userMoves()
   .then(function(moves){
-    var opt = {
+    var movesOpts = [];
+    for(var i = 0; i < moves.length; i++) {
+      movesOpts.push([moves[i]]);
+    }
+    var opts = {
       reply_to_message_id: msg.message_id,
       reply_markup: JSON.stringify({
-        keyboard: [
-          moves
+        one_time_keyboard: true,
+        keyboard: movesOpts,
+        selective: true
       })
     };
-    return bot.sendMessage(msg.chat.id, 'Which move do you want to use?', opts);
+    return bot.sendMessage(msg.chat.id, 'Which move do you want to use?', opts)
+    .then(function(sent) {
+      bot.onText(/.+/g, function(msg, match){
+        var move = msg.text;
+        battleText.useMove(move.toLowerCase())
+        .then(
+          function(results){
+            if(results[1] === "You Beat Me!") {
+              return bot.sendMessage(msg.chat.id, results[1]);
+            } else if (results[0] === "You Lost!") {
+              return bot.sendMessage(msg.chat.id, results[0]);
+            } else {
+              bot.sendMessage(msg.chat.id, results[0]);
+              return bot.sendMessage(msg.chat.id, results[1]);
+            }
+          },
+          function(err){
+            console.log(err);
+            return bot.sendMessage(msg.chat.id, "You can't use that move. " + err)
+          }
+        )
+      });
+    });
   }, function(err){
     console.log(err);
     return bot.sendMessage(msg.chat.id, "Error loading your Pokemon's moves. " + err);
   });
-}
-  // var move = match[1];
-  // if(!move || !move.length){
-  //   return bot.sendMessage(msg.chat.id, "Please type the name of your Move: ex. /attack Slash");
-  // }
-  // battleText.useMove(move.toLowerCase())
-  // .then(
-  //   function(results){
-  //     if(results[1] === "You Beat Me!") {
-  //       return bot.sendMessage(msg.chat.id, results[1]);
-  //     } else if (results[0] === "You Lost!") {
-  //       return bot.sendMessage(msg.chat.id, results[0]);
-  //     } else {
-  //       bot.sendMessage(msg.chat.id, results[0]);
-  //       return bot.sendMessage(msg.chat.id, results[1]);
-  //     }
-  //   },
-  //   function(err){
-  //     console.log(err);
-  //     return bot.sendMessage(msg.chat.id, "You can't use that move. " + err)
-  //   }
-  // )
 });
 
 app.listen(app.get('port'), function() {
