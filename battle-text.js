@@ -28,17 +28,12 @@ module.exports.unrecognizedCommand = function(commandsArray) {
 * Fetch the pokemon from the API, choose 4 random moves, write them to REDIS,
 * and then return a message stating the pokemon, its HP, and its moves.
 */
-module.exports.userChoosePokemon = function(commandsArray) {
-  var commandString = commandsArray.join(" "),
-      pokemonName = commandsArray[3],
-      textString = "You chose {pkmnn}. It has {hp} HP, and knows ",
+module.exports.userChoosePokemon = function(pokemon) {
+  var textString = "You chose {pkmnn}. It has {hp} HP, and knows ",
       moves = [],
       movePromises = [];
-  //validate that the command was "pkmn i choose {pokemon}"
-  if(!commandString.match(/i choose/i)) {
-    return module.exports.unrecognizedCommand(commandsArray);
-  }
-  return pokeapi.getPokemon(pokemonName).then(function(pkmndata){
+
+  return pokeapi.getPokemon(pokemon).then(function(pkmndata){
     moves = shuffle(pkmndata.moves);
     for(var i = 0; i < 4; i++) {
       movePromises.push(
@@ -77,7 +72,7 @@ module.exports.userChoosePokemon = function(commandsArray) {
         text: textString,
         spriteUrl: "http://sprites.pokecheck.org/i/"+stringy+".gif"
       }
-    });    
+    });
   });
 
 }
@@ -120,7 +115,7 @@ module.exports.npcChoosePokemon = function(dex_no) {
           text: textString,
           spriteUrl: "http://sprites.pokecheck.org/i/"+stringy+".gif"
         }
-    });    
+    });
   });
 }
 
@@ -129,12 +124,12 @@ module.exports.npcChoosePokemon = function(dex_no) {
 * Stores the player's Slack username and what channel the battle is in,
 * and chooses a Pokemon for the NPC from the original 151.
 */
-module.exports.startBattle = function(slackData) {
-  var textString = "OK {name}, I'll battle you! ".replace("{name}", slackData.user_name),
+module.exports.startBattle = function(user, chat) {
+  var textString = "OK {name}, I'll battle you! ".replace("{name}", user.first_name),
       dex_no = Math.ceil(Math.random() * 151);
-  return stateMachine.newBattle(slackData.user_name, slackData.channel_name)
+  return stateMachine.newBattle(user.id, chat.id)
   .then(function() {
-    return module.exports.npcChoosePokemon(dex_no); 
+    return module.exports.npcChoosePokemon(dex_no);
   })
   .then(function(pkmnChoice){
     return {
@@ -208,7 +203,7 @@ var useMoveUser = function(moveName) {
           textStringDmg = textStringDmg.replace("{hp}", hpRemaining);
           if(multiplier == 0)
             return textString;
-          return textString + textStringDmg; 
+          return textString + textStringDmg;
         })
       });
     })
@@ -250,7 +245,7 @@ var useMoveNpc = function() {
           textStringDmg = textStringDmg.replace("{hp}", hpRemaining);
           if(multiplier == 0)
             return textString;
-          return textString + textStringDmg; 
+          return textString + textStringDmg;
         })
       });
     })
@@ -265,12 +260,6 @@ var useMoveNpc = function() {
 module.exports.useMove = function(moveName) {
   return Q.all([useMoveNpc(), useMoveUser(moveName)])
   .then(function(results){
-    if(results[1] === "You Beat Me!") {
-      return results[1];
-    } else if (results[0] === "You Lost!") {
-      return results[0];
-    } else {
-      return results[1] + "\n" + results[0];
-    }
+    return results;
   })
 }
