@@ -143,6 +143,10 @@ module.exports.endBattle = function() {
   return stateMachine.endBattle();
 }
 
+module.exports.userMoves = function() {
+  return stateMachine.getUserAllowedMoves();
+}
+
 var effectivenessMessage = function(mult) {
   switch(mult) {
     case 0:

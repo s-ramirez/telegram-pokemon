@@ -45,6 +45,7 @@ app.post('/' + config.botToken, function(req, res){
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
+
 //Help
 bot.onText(/\/help/, function(msg, match){
   return bot.sendMessage(msg.chat.id,
@@ -53,6 +54,7 @@ bot.onText(/\/help/, function(msg, match){
     '/attack - Attack your opponent using a specific move.\n' +
     '/end - Finish your existing battle.')
 });
+
 //Start a new battle
 bot.onText(/\/start/, function(msg, match) {
   battleText.startBattle(msg.from, msg.chat)
@@ -102,28 +104,43 @@ bot.onText(/\/choose (.+)/, function(msg, match){
 });
 
 //Attack the opponent
-bot.onText(/\/attack (.+)/, function(msg, match){
-  var move = match[1];
-  if(!move || !move.length){
-    return bot.sendMessage(msg.chat.id, "Please type the name of your Move: ex. /attack Slash");
-  }
-  battleText.useMove(move.toLowerCase())
-  .then(
-    function(results){
-      if(results[1] === "You Beat Me!") {
-        return bot.sendMessage(msg.chat.id, results[1]);
-      } else if (results[0] === "You Lost!") {
-        return bot.sendMessage(msg.chat.id, results[0]);
-      } else {
-        bot.sendMessage(msg.chat.id, results[0]);
-        return bot.sendMessage(msg.chat.id, results[1]);
-      }
-    },
-    function(err){
-      console.log(err);
-      return bot.sendMessage(msg.chat.id, "You can't use that move. " + err)
-    }
-  )
+bot.onText(/\/attack/, function(msg, match){
+  battleText.userMoves()
+  .then(function(moves){
+    var opt = {
+      reply_to_message_id: msg.message_id,
+      reply_markup: JSON.stringify({
+        keyboard: [
+          moves
+      })
+    };
+    return bot.sendMessage(msg.chat.id, 'Which move do you want to use?', opts);
+  }, function(err){
+    console.log(err);
+    return bot.sendMessage(msg.chat.id, "Error loading your Pokemon's moves. " + err);
+  });
+}
+  // var move = match[1];
+  // if(!move || !move.length){
+  //   return bot.sendMessage(msg.chat.id, "Please type the name of your Move: ex. /attack Slash");
+  // }
+  // battleText.useMove(move.toLowerCase())
+  // .then(
+  //   function(results){
+  //     if(results[1] === "You Beat Me!") {
+  //       return bot.sendMessage(msg.chat.id, results[1]);
+  //     } else if (results[0] === "You Lost!") {
+  //       return bot.sendMessage(msg.chat.id, results[0]);
+  //     } else {
+  //       bot.sendMessage(msg.chat.id, results[0]);
+  //       return bot.sendMessage(msg.chat.id, results[1]);
+  //     }
+  //   },
+  //   function(err){
+  //     console.log(err);
+  //     return bot.sendMessage(msg.chat.id, "You can't use that move. " + err)
+  //   }
+  // )
 });
 
 app.listen(app.get('port'), function() {
