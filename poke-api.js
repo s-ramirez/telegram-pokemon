@@ -6,7 +6,7 @@ module.exports = {}
 module.exports.getPokemon = function(name) {
   var deferred = Q.defer();
   request("http://pokeapi.co/api/v1/pokemon/"+name, function (error, response, body) {
-    if (response.statusCode == 200) {
+    if (response && response.statusCode == 200) {
       deferred.resolve(JSON.parse(body));
     } else {
       deferred.reject(new Error("Error Getting Pokemon"));
@@ -18,7 +18,7 @@ module.exports.getPokemon = function(name) {
 module.exports.getSprite = function(url) {
   var deferred = Q.defer();
   request(url, function (error, response, body) {
-    if (response.statusCode == 200) {
+    if (response && response.statusCode == 200) {
       deferred.resolve(JSON.parse(body));
     } else {
       deferred.reject(new Error("Error Getting Sprite"));
@@ -30,7 +30,7 @@ module.exports.getSprite = function(url) {
 module.exports.getMove = function(url) {
   var deferred = Q.defer();
   request(url, function (error, response, body) {
-    if (response.statusCode == 200) {
+    if (response && response.statusCode == 200) {
       deferred.resolve(JSON.parse(body));
     } else {
       deferred.reject(new Error("Error Getting Move"));

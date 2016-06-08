@@ -71,7 +71,7 @@ bot.onText(/\/start/, function(msg, match) {
 });
 
 //End an existing battle
-bot.onText(/\/end/, function(msg, match)
+bot.onText(/\/end/, function(msg, match){
   battleText.endBattle()
   .then(
     function(){
@@ -122,6 +122,7 @@ bot.onText(/\/attack/, function(msg, match){
     return bot.sendMessage(msg.chat.id, 'Which move do you want to use?', opts)
     .then(function(sent) {
       bot.onText(/.+/g, function(msg, match){
+        bot.textRegexpCallbacks.pop();
         var move = msg.text;
         battleText.useMove(move.toLowerCase())
         .then(
